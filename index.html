@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>UVa</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            margin: 0;
+            overflow-x: hidden;
+        }
+
+        iframe {
+            display: block;
+            width: 100%;
+            height: calc(100vh - 62px);
+            border: none;
+        }
+
+        #title_bar {
+            position: fixed;
+            margin-top: -62px;
+            width: 100%;
+            padding: 16px;
+            backdrop-filter: blur(10px);
+            font-size: 20px;
+            transition-duration: 300ms;
+        }
+
+        button {
+            font-size: 20px;
+            background-color: transparent;
+            border: solid gray 2px;
+            border-radius: 4px;
+        }
+    </style>
+
+</head>
+<body>
+<div id="title_bar">
+    <label for="problem_id">Problem ID: </label>
+    <input style="font-size: 20px;background-color: transparent;border: solid gray 2px;border-radius: 4px" type="text"
+           id="problem_id">
+    <button onclick="problemGo()">Go</button>
+    <button style="float: right;margin-right: 20px" onclick="gotoSubmission()">Submission</button>
+    <button style="float: right;margin-right: 6px" onclick="gotoProblem()">Problem</button>
+</div>
+<div style="margin-top: 62px">
+    <iframe id="problem_frame" src=""></iframe>
+    <iframe src="https://onlinejudge.org/index.php?option=com_onlinejudge&Itemid=25"></iframe>
+</div>
+<script>
+    let isTop = true
+    let ticking = false
+    let titleBar = document.getElementById("title_bar")
+
+    function setTitleBar(isTop) {
+        if (titleBar) {
+            if (isTop) {
+                titleBar.style.backgroundColor = "white"
+                titleBar.style.boxShadow = "none"
+            } else {
+                titleBar.style.backgroundColor = "rgba(255, 255, 255, 0.7)"
+                titleBar.style.boxShadow = "0 0 16px 0 rgba(0,0,0,0.5)"
+            }
+        }
+    }
+
+    document.addEventListener("scroll", function (e) {
+        isTop = window.scrollY === 0
+
+        if (!ticking) {
+            window.requestAnimationFrame(function () {
+                setTitleBar(isTop)
+                ticking = false
+            })
+
+            ticking = true
+        }
+    })
+
+    function gotoProblem() {
+        window.scrollTo({
+            top: 0,
+            left: 0,
+            behavior: "smooth",
+        })
+    }
+
+    function gotoSubmission() {
+        window.scrollTo({
+            top: window.innerHeight,
+            left: 0,
+            behavior: "smooth",
+        })
+    }
+
+
+    let idInput = document.getElementById("problem_id")
+    idInput.addEventListener("keyup", function (event) {
+        if (event.keyCode === 13) {
+            event.preventDefault()
+            problemGo()
+        }
+    })
+    let problemFrame = document.getElementById("problem_frame")
+
+    function problemGo() {
+        let id = parseInt(idInput.value)
+        if (isNaN(id)) return
+
+        problemFrame.src = `https://onlinejudge.org/external/${Math.floor(id / 100)}/${id}.pdf`
+    }
+</script>
+
+</body>
+</html>
